@@ -17,6 +17,7 @@ public class ShopManager : MonoBehaviour
     public Transform confirmPanel;
     public TMP_Text confirmText;
     public Button confirmOkButton;
+    public Button confirmCancelButton;
     public TMP_Text shopCoinsText;
     public Animator crossfade;
 
@@ -40,6 +41,7 @@ public class ShopManager : MonoBehaviour
 
     private PlayerData playerData;
     private ShopTabs selectedTab;
+    private IAPV5Manager iAPV5Manager;
 
     private Color gray = new Color(0.45f, 0.45f, 0.45f, 1f);
 
@@ -47,6 +49,7 @@ public class ShopManager : MonoBehaviour
     {
         playerData = PlayerData.LoadData();
         selectedTab = ShopTabs.CUBE;
+        iAPV5Manager = IAPV5Manager.GetInstance();
 
         UpdateTab();
 
@@ -103,6 +106,8 @@ public class ShopManager : MonoBehaviour
 
             UpdateShopColorItem(shopColorItemObj.transform, shopColorItem);
         }
+
+        Input.multiTouchEnabled = false;
     }
 
     private void Start()
@@ -224,7 +229,28 @@ public class ShopManager : MonoBehaviour
                         confirmOkButton.onClick.RemoveAllListeners();
                         confirmOkButton.onClick.AddListener(() =>
                         {
-                            // todo
+                            buttonClickSfx.Play();
+
+                            confirmOkButton.interactable = false;
+                            confirmCancelButton.interactable = false;
+
+                            iAPV5Manager.Buy(shopItem.id, (id) =>
+                            {
+                                playerData.icons[(int)tab] = playerData.icons[(int)tab].Remove(shopItem.index, 1).Insert(shopItem.index, "1");
+
+                                playerData.SaveData();
+
+                                confirmOkButton.interactable = true;
+                                confirmCancelButton.interactable = true;
+
+                                CloseConfirmPanel();
+
+                                UpdateShopItem(shopItemObj, shopItem, tab);
+                            }, () =>
+                            {
+                                confirmOkButton.interactable = true;
+                                confirmCancelButton.interactable = true;
+                            });
                         });
                     });
                 }
@@ -334,7 +360,28 @@ public class ShopManager : MonoBehaviour
                         confirmOkButton.onClick.RemoveAllListeners();
                         confirmOkButton.onClick.AddListener(() =>
                         {
-                            // todo
+                            buttonClickSfx.Play();
+
+                            confirmOkButton.interactable = false;
+                            confirmCancelButton.interactable = false;
+
+                            iAPV5Manager.Buy(shopColorItem.id, (id) =>
+                            {
+                                playerData.colors = playerData.colors.Remove(shopColorItem.index, 1).Insert(shopColorItem.index, "1");
+
+                                playerData.SaveData();
+
+                                confirmOkButton.interactable = true;
+                                confirmCancelButton.interactable = true;
+
+                                CloseConfirmPanel();
+
+                                UpdateShopColorItem(shopColorItemObj, shopColorItem);
+                            }, () =>
+                            {
+                                confirmOkButton.interactable = true;
+                                confirmCancelButton.interactable = true;
+                            });
                         });
                     });
                 }

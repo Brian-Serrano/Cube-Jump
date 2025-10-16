@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     private List<Transform> ceilings;
     private List<List<Transform>> backgrounds;
     private GameObject background1;
-    private List<List<Transform>> tilesPool;
+    private List<List<Transform>> tilesGroup;
 
     private Dictionary<char, Mapping> blockMapping;
     private List<int> changes;
@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour
         rewardedAdManager = RewardedAdManager.GetInstance();
         blockPoolManager = GetComponent<BlockPoolManager>();
 
-        tilesPool = new List<List<Transform>>();
+        tilesGroup = new List<List<Transform>>();
 
         cubeSprite = configHandler.cubeShopItems[Mathf.Max(playerData.icons[0].IndexOf('2'), 0)].itemSprite;
         shipSprite = configHandler.shipShopItems[Mathf.Max(playerData.icons[1].IndexOf('2'), 0)].itemSprite;
@@ -449,7 +449,9 @@ public class GameManager : MonoBehaviour
 
     private void MapObstacle(TextAsset chunk)
     {
-        string[] lines = chunk.text.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = chunk.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        int oIndex = obstacleIndex++;
 
         List<Transform> tiles = new List<Transform>();
 
@@ -463,49 +465,68 @@ public class GameManager : MonoBehaviour
                 if (index >= 0)
                 {
                     GameObject prefab = configHandler.objectPrefab[index];
-                    float xSpawnPoint = (j + 10.5f) + (obstacleIndex * 21);
+                    float xSpawnPoint = (j + 10.5f) + (oIndex * 21);
                     float ySpawnPoint = -i + 4.5f;
 
                     Transform parent = parentIndex >= 0 ? parents[parentIndex] : null;
 
-                    //GameObject instance = blockPoolManager.Get(prefab, parent);
-                    GameObject instance = Instantiate(prefab, parent);
-                    instance.transform.position = new Vector3(xSpawnPoint, ySpawnPoint);
-                    instance.transform.rotation = prefab.transform.rotation;
-
+                    GameObject instance = prefab.CompareTag("Coin") ? Instantiate(prefab, parent) : blockPoolManager.Get(prefab, parent);
+                    instance.transform.SetPositionAndRotation(new Vector3(xSpawnPoint, ySpawnPoint), prefab.transform.rotation);
                     tiles.Add(instance.transform);
                 }
             }
         }
 
-        tilesPool.Add(tiles);
+        StartCoroutine(UpdateCompositeColliders());
 
-        obstacleIndex++;
+        tilesGroup.Add(tiles);
+    }
+
+    private IEnumerator UpdateCompositeColliders()
+    {
+        yield return new WaitForFixedUpdate();
+
+        foreach (Transform parent in parents)
+        {
+            if (parent.TryGetComponent<CompositeCollider2D>(out var composite))
+            {
+                composite.GenerateGeometry();
+            }
+        }
     }
 
     private void DestroyObstacles()
     {
-        List<Transform> topObstacles = tilesPool[0];
-        tilesPool.RemoveAt(0);
+        List<Transform> topObstacles = tilesGroup[0];
+        tilesGroup.RemoveAt(0);
 
         foreach (Transform t in topObstacles)
         {
-            //blockPoolManager.Release(t.gameObject);
-            if (t != null) Destroy(t.gameObject);
+            if (t != null)
+            {
+                if (t.CompareTag("Coin"))
+                {
+                    Destroy(t.gameObject);
+                }
+                else
+                {
+                    blockPoolManager.Release(t.gameObject);
+                }
+            }
         }
     }
 
     private string GetChunkDifficulty()
     {
-        if (obstacleIndex >= 0 && obstacleIndex <= 3)
+        if (obstacleIndex >= 0 && obstacleIndex <= 10)
         {
             return "Easy";
         }
-        else if (obstacleIndex >= 4 && obstacleIndex <= 6)
+        else if (obstacleIndex >= 11 && obstacleIndex <= 20)
         {
             return "Normal";
         }
-        else if (obstacleIndex >= 7)
+        else if (obstacleIndex >= 21)
         {
             return "Hard";
         }
@@ -544,7 +565,6 @@ public class GameManager : MonoBehaviour
 
     public void CollectCoin(Collider2D collision)
     {
-        //blockPoolManager.Release(collision.gameObject);
         Destroy(collision.gameObject);
 
         gameCoins++;
@@ -719,23 +739,32 @@ public class GameManager : MonoBehaviour
             loseWatchAdButton.interactable = false;
         }
 
-        toastManager.PauseToasts();
-
-        interstitialAdManager.ShowInterstitial(() =>
+        if (Mathf.Max(0, Mathf.RoundToInt(player.transform.position.x)) > 100)
         {
-            toastManager.ResumeToasts();
+            toastManager.PauseToasts();
 
-            StartCoroutine(SetPauseAfterAd());
+            interstitialAdManager.ShowInterstitial(() =>
+            {
+                toastManager.ResumeToasts();
+
+                StartCoroutine(SetPauseAfterAd());
+                StartCoroutine(ShowGameOver());
+            });
+        }
+        else
+        {
             StartCoroutine(ShowGameOver());
-        });
+        }
     }
 
     private IEnumerator ShowGameOver()
     {
         loseSfx.Play();
+        crossfade.GetComponent<CanvasGroup>().blocksRaycasts = true;
 
         yield return new WaitForSecondsRealtime(1f);
 
+        crossfade.GetComponent<CanvasGroup>().blocksRaycasts = false;
         gameOverPanel.gameObject.SetActive(true);
         gameOverPanel.GetChild(1).GetComponent<Animator>().SetBool("isOpen", true);
 

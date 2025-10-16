@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2207314581781852660}
   - component: {fileID: 2326773851845126120}
   - component: {fileID: 4432490531898830236}
+  - component: {fileID: -4166485439624384989}
   m_Layer: 0
   m_Name: N_GravityPortalA
   m_TagString: Flip Gravity Portal
@@ -134,3 +135,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 3}
   m_EdgeRadius: 0
+--- !u!114 &-4166485439624384989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192418398701430691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849fd84f6061d3e40bafb414553cffec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: 

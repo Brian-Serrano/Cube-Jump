@@ -153,6 +153,8 @@ public class MenuManager : MonoBehaviour
 
         bestScoreMainTxt.text = $"BEST SCORE: {playerData.highscore}";
         coinsMainTxt.text = playerData.coins.ToString();
+
+        Input.multiTouchEnabled = false;
     }
 
     private void Start()
@@ -191,13 +193,13 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        float[] backgroundMoveSpeed = new float[] { 2f, 1.5f, 1f, 0.5f };
+        float[] backgroundMoveSpeed = new float[] { -2f, -3f, -4f, -5f };
 
         for (int i = 0; i < backgrounds.Count; i++)
         {
             List<Transform> background = backgrounds[i];
 
-            if (background[0].transform.position.x <= -backgroundScale)
+            if (background[0].transform.position.x < -backgroundScale)
             {
                 Transform topBackground = background[0];
                 background.RemoveAt(0);
@@ -207,7 +209,7 @@ public class MenuManager : MonoBehaviour
 
             foreach (Transform bg in background)
             {
-                bg.position = new Vector2(bg.position.x - (Time.deltaTime * backgroundMoveSpeed[i]), 0f);
+                bg.position = new Vector2(bg.position.x + Time.deltaTime * backgroundMoveSpeed[i], 0f);
             }
         }
 
@@ -1138,6 +1140,8 @@ public class MenuManager : MonoBehaviour
 
     private IEnumerator AnimateCoins(Vector2 position, int targetCount, float time = 1f)
     {
+        targetCount /= 10;
+
         for (int i = 0; i < targetCount; i++)
         {
             GameObject coin = Instantiate(coinPrefab, position, Quaternion.identity, canvas.transform);

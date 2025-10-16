@@ -4,40 +4,36 @@ using UnityEngine.Pool;
 
 public class BlockPoolManager : MonoBehaviour
 {
-    private Dictionary<GameObject, ObjectPool<GameObject>> pools = new();
-    private HashSet<GameObject> activeObjects = new(); // track active ones
+    private Dictionary<string, ObjectPool<GameObject>> pools = new();
 
     public GameObject Get(GameObject prefab, Transform parent = null)
     {
-        if (!pools.TryGetValue(prefab, out var pool))
+        if (!pools.TryGetValue(prefab.name, out var pool))
         {
             pool = new ObjectPool<GameObject>(
                 createFunc: () =>
                 {
                     GameObject obj = Instantiate(prefab);
-                    var pooled = obj.AddComponent<BlockType>();
-                    pooled.prefabRef = prefab;
-                    obj.transform.position = new Vector2(-100f, 100f);
+                    var pooled = obj.GetComponent<BlockType>();
+                    pooled.prefabName = prefab.name;
+                    obj.SetActive(false);
                     return obj;
                 },
                 actionOnGet: (obj) =>
                 {
-                    activeObjects.Add(obj);
+                    obj.SetActive(true);
                 },
                 actionOnRelease: (obj) =>
                 {
-                    obj.transform.position = new Vector2(-100f, 100f);
-                    activeObjects.Remove(obj);
+                    obj.SetActive(false);
                 },
                 actionOnDestroy: (obj) =>
                 {
                     Destroy(obj);
-                },
-                defaultCapacity: 100,   // optional
-                maxSize: 500            // optional
+                }
             );
 
-            pools.Add(prefab, pool);
+            pools.Add(prefab.name, pool);
         }
 
         GameObject instance = pool.Get();
@@ -54,10 +50,7 @@ public class BlockPoolManager : MonoBehaviour
         var pooled = instance.GetComponent<BlockType>();
         if (pooled == null) { Destroy(instance); return; }
 
-        if (!activeObjects.Contains(instance))
-            return;
-
-        if (pools.TryGetValue(pooled.prefabRef, out var pool))
+        if (pools.TryGetValue(pooled.prefabName, out var pool))
             pool.Release(instance);
         else
             Destroy(instance);

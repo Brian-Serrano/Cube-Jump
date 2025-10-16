@@ -10,7 +10,7 @@ public class PersistentDataController
         {
             using FileStream stream = new FileStream(path, FileMode.Open);
             using StreamReader reader = new StreamReader(stream);
-            string data = reader.ReadToEnd();
+            string data = SecurePersistentData.Decrypt(reader.ReadToEnd());
 
             return JsonUtility.FromJson<T>(data);
         }
@@ -29,7 +29,7 @@ public class PersistentDataController
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
 
-            string dataStr = JsonUtility.ToJson(data, true);
+            string dataStr = SecurePersistentData.Encrypt(JsonUtility.ToJson(data, true));
             using FileStream stream = new FileStream(path, FileMode.Create);
             using StreamWriter writer = new StreamWriter(stream);
             writer.Write(dataStr);

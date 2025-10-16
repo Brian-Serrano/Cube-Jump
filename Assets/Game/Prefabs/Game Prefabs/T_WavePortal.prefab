@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9213896268288406703}
   - component: {fileID: 4230768767784736827}
   - component: {fileID: 6295405954299663828}
+  - component: {fileID: -8706044227378791373}
   m_Layer: 0
   m_Name: T_WavePortal
   m_TagString: Wave Portal
@@ -134,3 +135,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 3}
   m_EdgeRadius: 0
+--- !u!114 &-8706044227378791373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1595144479350139958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849fd84f6061d3e40bafb414553cffec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: 

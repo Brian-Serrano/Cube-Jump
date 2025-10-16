@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5918796604528847429}
   - component: {fileID: 510819242702012296}
   - component: {fileID: 6706279206234901581}
+  - component: {fileID: 6525243981775748188}
   m_Layer: 0
   m_Name: G_ThornPit06
   m_TagString: Spike
@@ -134,3 +135,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.3, y: 0.3}
   m_EdgeRadius: 0
+--- !u!114 &6525243981775748188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7426108584447130516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849fd84f6061d3e40bafb414553cffec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: 

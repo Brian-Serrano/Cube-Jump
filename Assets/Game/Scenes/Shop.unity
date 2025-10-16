@@ -1891,6 +1891,7 @@ MonoBehaviour:
   confirmPanel: {fileID: 1607513869}
   confirmText: {fileID: 1827698712}
   confirmOkButton: {fileID: 1773217155}
+  confirmCancelButton: {fileID: 1530912193}
   shopCoinsText: {fileID: 1210864042}
   crossfade: {fileID: 1669410322}
   tabsScroll:

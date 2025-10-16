@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5022138991207885125}
   - component: {fileID: 2512800088554701955}
   - component: {fileID: 3026348193552725086}
+  - component: {fileID: 1878241957771292777}
   m_Layer: 0
   m_Name: J_CyanGravityRing
   m_TagString: Cyan Ring
@@ -124,3 +125,16 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.75
+--- !u!114 &1878241957771292777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2795168170484424088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849fd84f6061d3e40bafb414553cffec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: 

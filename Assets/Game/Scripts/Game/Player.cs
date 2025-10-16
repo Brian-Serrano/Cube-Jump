@@ -265,10 +265,8 @@ public class Player : MonoBehaviour
                 case PlayerMode.SHIP:
                     newPos = transform.position;
 
-                    if (Input.touchCount > 0 && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
-                    {
-                        isFlying = true;
-                    }
+                    bool touching = Input.touchCount > 0 && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+                    isFlying = touching;
 
                     Vector2 direction = newPos - prevPos;
 
@@ -341,14 +339,19 @@ public class Player : MonoBehaviour
 
                     newPos = transform.position;
 
-                    if (Input.touchCount > 0 && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                    bool touchingWave = Input.touchCount > 0 && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+
+                    if (touchingWave && !isFlying)
                     {
-                        isFlying = true;
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, isFlip ? -speed : speed);
                     }
-                    else
+                    
+                    if (!touchingWave && isFlying)
                     {
-                        isFlying = false;
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, isFlip ? speed : -speed);
                     }
+
+                    isFlying = touchingWave;
 
                     Vector2 direction2 = newPos - prevPos;
 
@@ -382,7 +385,6 @@ public class Player : MonoBehaviour
                     if (isFlying)
                     {
                         rb.AddForce((isFlip ? -1 : 1) * flyForce * Vector2.up);
-                        isFlying = false;
                     }
 
                     float clampedShipY = Mathf.Clamp(rb.linearVelocity.y, -maxShipYSpeed, maxShipYSpeed);

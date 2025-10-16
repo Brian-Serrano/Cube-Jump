@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1988342716530362033}
   - component: {fileID: 6828168454307110260}
   - component: {fileID: 7699476673429645401}
+  - component: {fileID: 1720628342570545341}
   m_Layer: 0
   m_Name: P_CubePortal
   m_TagString: Cube Portal
@@ -134,3 +135,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 3}
   m_EdgeRadius: 0
+--- !u!114 &1720628342570545341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8050742345518005464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849fd84f6061d3e40bafb414553cffec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: 

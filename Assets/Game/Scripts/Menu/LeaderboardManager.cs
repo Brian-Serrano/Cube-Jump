@@ -106,6 +106,8 @@ public class LeaderboardManager : MonoBehaviour
         float backgroundScale = Mathf.Max(backgroundScaleX, backgroundScaleY);
 
         background.transform.localScale = new Vector3(backgroundScale, backgroundScale, 1f);
+
+        Input.multiTouchEnabled = false;
     }
 
     private void Start()

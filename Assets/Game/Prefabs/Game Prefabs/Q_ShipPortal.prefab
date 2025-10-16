@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2329191868254331176}
   - component: {fileID: 5894452354516335060}
   - component: {fileID: 509289164060439648}
+  - component: {fileID: -7391311417257624160}
   m_Layer: 0
   m_Name: Q_ShipPortal
   m_TagString: Ship Portal
@@ -134,3 +135,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 3}
   m_EdgeRadius: 0
+--- !u!114 &-7391311417257624160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7740388330899698681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849fd84f6061d3e40bafb414553cffec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabName: 

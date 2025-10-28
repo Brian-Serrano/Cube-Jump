@@ -51,6 +51,8 @@ public class ShopManager : MonoBehaviour
         selectedTab = ShopTabs.CUBE;
         iAPV5Manager = IAPV5Manager.GetInstance();
 
+        BannerAdManager.GetInstance().EnsureBannerVisible();
+
         UpdateTab();
 
         shopCoinsText.text = playerData.coins.ToString();
@@ -489,6 +491,12 @@ public class ShopManager : MonoBehaviour
     {
         buttonClickSfx.Play();
         StartCoroutine(SwitchScene("Menu"));
+    }
+
+    public void RestorePurchase()
+    {
+        buttonClickSfx.Play();
+        iAPV5Manager.RestorePurchases();
     }
 
     private IEnumerator DelayedPanelClose(Transform panel)

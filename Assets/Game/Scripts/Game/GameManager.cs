@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using PimDeWitte.UnityMainThreadDispatcher;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -121,6 +122,8 @@ public class GameManager : MonoBehaviour
         interstitialAdManager = InterstitialAdManager.GetInstance();
         rewardedAdManager = RewardedAdManager.GetInstance();
         blockPoolManager = GetComponent<BlockPoolManager>();
+
+        BannerAdManager.GetInstance().EnsureBannerVisible();
 
         tilesGroup = new List<List<Transform>>();
 
@@ -651,38 +654,44 @@ public class GameManager : MonoBehaviour
 
         rewardedAdManager.ShowRewardedAd(() => { }, () =>
         {
-            watchAdRevive.interactable = true;
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                watchAdRevive.interactable = true;
 
-            playerData.revivesDone++;
-            reviveChances--;
-            isReviveActive = false;
-            isRevivedPaused = false;
+                playerData.revivesDone++;
+                reviveChances--;
+                isReviveActive = false;
+                isRevivedPaused = false;
 
-            gameState = GameState.PLAYING;
+                gameState = GameState.PLAYING;
 
-            playerData.SaveData();
+                playerData.SaveData();
 
-            player.GetComponent<Player>().SetPlayerAfterRevive();
+                player.GetComponent<Player>().SetPlayerAfterRevive();
 
-            toastManager.ResumeToasts();
+                toastManager.ResumeToasts();
 
-            UnpauseAllSfx();
+                UnpauseAllSfx();
 
-            reviveMenu.gameObject.SetActive(false);
+                reviveMenu.gameObject.SetActive(false);
 
-            Time.timeScale = 1f;
+                Time.timeScale = 1f;
+            });
         }, () =>
         {
-            watchAdRevive.interactable = true;
-
-            toastManager.ResumeToasts();
-
-            OpenAdLoadFailedPanel(() =>
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                isRevivedPaused = false;
-            });
+                watchAdRevive.interactable = true;
 
-            StartCoroutine(SetPauseAfterAd());
+                toastManager.ResumeToasts();
+
+                OpenAdLoadFailedPanel(() =>
+                {
+                    isRevivedPaused = false;
+                });
+
+                StartCoroutine(SetPauseAfterAd());
+            });
         });
     }
 
@@ -711,26 +720,32 @@ public class GameManager : MonoBehaviour
 
                 rewardedAdManager.ShowRewardedAd(() => { }, () =>
                 {
-                    playerData.coins += gameCoins;
-                    playerData.totalCoins += gameCoins;
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        playerData.coins += gameCoins;
+                        playerData.totalCoins += gameCoins;
 
-                    playerData.SaveData();
+                        playerData.SaveData();
 
-                    toastManager.ResumeToasts();
+                        toastManager.ResumeToasts();
 
-                    StartCoroutine(AnimationManager.AnimateCoinText(loseCoinsTxt, gameCoins, gameCoins * 2, "", " <sprite index=0>"));
+                        StartCoroutine(AnimationManager.AnimateCoinText(loseCoinsTxt, gameCoins, gameCoins * 2, "", " <sprite index=0>"));
 
-                    loseWatchAdButton.interactable = false;
-                    loseWatchAdButton.GetComponentInChildren<TMP_Text>().text = "Watched";
+                        loseWatchAdButton.interactable = false;
+                        loseWatchAdButton.GetComponentInChildren<TMP_Text>().text = "Watched";
 
-                    StartCoroutine(SetPauseAfterAd());
+                        StartCoroutine(SetPauseAfterAd());
+                    });
                 }, () =>
                 {
-                    loseWatchAdButton.interactable = true;
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        loseWatchAdButton.interactable = true;
 
-                    OpenAdLoadFailedPanel(() => { });
-                    toastManager.ResumeToasts();
-                    StartCoroutine(SetPauseAfterAd());
+                        OpenAdLoadFailedPanel(() => { });
+                        toastManager.ResumeToasts();
+                        StartCoroutine(SetPauseAfterAd());
+                    });
                 });
             });
         }
@@ -745,10 +760,13 @@ public class GameManager : MonoBehaviour
 
             interstitialAdManager.ShowInterstitial(() =>
             {
-                toastManager.ResumeToasts();
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    toastManager.ResumeToasts();
 
-                StartCoroutine(SetPauseAfterAd());
-                StartCoroutine(ShowGameOver());
+                    StartCoroutine(SetPauseAfterAd());
+                    StartCoroutine(ShowGameOver());
+                });
             });
         }
         else

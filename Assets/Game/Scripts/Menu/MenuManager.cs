@@ -1,4 +1,5 @@
 using Newtonsoft.Json.Utilities;
+using PimDeWitte.UnityMainThreadDispatcher;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -122,7 +123,6 @@ public class MenuManager : MonoBehaviour
     public AudioMixer audioMixer;
 
     private PlayerData playerData;
-    private BannerAdManager bannerAdManager;
     private RewardedAdManager rewardedAdManager;
     private CubeJumpHTTPClient client;
     private List<List<Transform>> backgrounds;
@@ -140,9 +140,9 @@ public class MenuManager : MonoBehaviour
     private void Awake()
     {
         playerData = PlayerData.LoadData();
-
-        bannerAdManager = BannerAdManager.GetInstance();
         rewardedAdManager = RewardedAdManager.GetInstance();
+
+        BannerAdManager.GetInstance().EnsureBannerVisible();
 
         client = CubeJumpHTTPClient.GetInstance();
 
@@ -594,16 +594,22 @@ public class MenuManager : MonoBehaviour
 
                         rewardedAdManager.ShowRewardedAd(() => { }, () =>
                         {
-                            StartCoroutine(ClaimDailyReward(chestSprites[idx], idx));
+                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                            {
+                                StartCoroutine(ClaimDailyReward(chestSprites[idx], idx));
 
-                            backgroundMusic.UnPause();
+                                backgroundMusic.UnPause();
+                            });
                         }, () =>
                         {
-                            OpenAdLoadFailedPanel();
+                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                            {
+                                OpenAdLoadFailedPanel();
 
-                            buttons[idx].interactable = true;
+                                buttons[idx].interactable = true;
 
-                            backgroundMusic.UnPause();
+                                backgroundMusic.UnPause();
+                            });
                         });
                     }
                 });

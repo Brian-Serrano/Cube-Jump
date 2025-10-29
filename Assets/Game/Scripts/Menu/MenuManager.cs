@@ -1,5 +1,3 @@
-using Newtonsoft.Json.Utilities;
-using PimDeWitte.UnityMainThreadDispatcher;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -126,6 +124,7 @@ public class MenuManager : MonoBehaviour
     private RewardedAdManager rewardedAdManager;
     private CubeJumpHTTPClient client;
     private List<List<Transform>> backgrounds;
+    private MainThreadRun mainThreadRun;
 
     private float backgroundScale;
 
@@ -141,6 +140,7 @@ public class MenuManager : MonoBehaviour
     {
         playerData = PlayerData.LoadData();
         rewardedAdManager = RewardedAdManager.GetInstance();
+        mainThreadRun = MainThreadRun.GetInstance();
 
         BannerAdManager.GetInstance().EnsureBannerVisible();
 
@@ -268,6 +268,8 @@ public class MenuManager : MonoBehaviour
                 }
             }
         }
+
+        mainThreadRun.Update();
     }
 
     private string GetTimeRemaining()
@@ -594,7 +596,7 @@ public class MenuManager : MonoBehaviour
 
                         rewardedAdManager.ShowRewardedAd(() => { }, () =>
                         {
-                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                            mainThreadRun.Enqueue(() =>
                             {
                                 StartCoroutine(ClaimDailyReward(chestSprites[idx], idx));
 
@@ -602,7 +604,7 @@ public class MenuManager : MonoBehaviour
                             });
                         }, () =>
                         {
-                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                            mainThreadRun.Enqueue(() =>
                             {
                                 OpenAdLoadFailedPanel();
 

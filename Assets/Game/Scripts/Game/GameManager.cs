@@ -1,5 +1,3 @@
-using NUnit.Framework;
-using PimDeWitte.UnityMainThreadDispatcher;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,6 +72,7 @@ public class GameManager : MonoBehaviour
     private RewardedAdManager rewardedAdManager;
     private Action adLoadFailedPanelClose;
     private BlockPoolManager blockPoolManager;
+    private MainThreadRun mainThreadRun;
 
     private Sprite cubeSprite;
     private Sprite shipSprite;
@@ -122,6 +121,7 @@ public class GameManager : MonoBehaviour
         interstitialAdManager = InterstitialAdManager.GetInstance();
         rewardedAdManager = RewardedAdManager.GetInstance();
         blockPoolManager = GetComponent<BlockPoolManager>();
+        mainThreadRun = MainThreadRun.GetInstance();
 
         BannerAdManager.GetInstance().EnsureBannerVisible();
 
@@ -405,6 +405,8 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+
+        mainThreadRun.Update();
     }
 
     private void GenerateObstacle()
@@ -654,7 +656,7 @@ public class GameManager : MonoBehaviour
 
         rewardedAdManager.ShowRewardedAd(() => { }, () =>
         {
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            mainThreadRun.Enqueue(() =>
             {
                 watchAdRevive.interactable = true;
 
@@ -679,7 +681,7 @@ public class GameManager : MonoBehaviour
             });
         }, () =>
         {
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            mainThreadRun.Enqueue(() =>
             {
                 watchAdRevive.interactable = true;
 
@@ -720,7 +722,7 @@ public class GameManager : MonoBehaviour
 
                 rewardedAdManager.ShowRewardedAd(() => { }, () =>
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    mainThreadRun.Enqueue(() =>
                     {
                         playerData.coins += gameCoins;
                         playerData.totalCoins += gameCoins;
@@ -738,7 +740,7 @@ public class GameManager : MonoBehaviour
                     });
                 }, () =>
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    mainThreadRun.Enqueue(() =>
                     {
                         loseWatchAdButton.interactable = true;
 
@@ -760,7 +762,7 @@ public class GameManager : MonoBehaviour
 
             interstitialAdManager.ShowInterstitial(() =>
             {
-                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                mainThreadRun.Enqueue(() =>
                 {
                     toastManager.ResumeToasts();
 
